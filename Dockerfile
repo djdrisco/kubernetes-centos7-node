@@ -42,24 +42,29 @@ LABEL summary="$SUMMARY" \
       help="For more information visit https://github.com/djdrisco/kubernetes-centos7-node" 
 
 
-RUN yum install -y centos-release-scl-rh && \
-    ( [ "rh-${NAME}${NODEJS_VERSION}" != "${NODEJS_SCL}" ] && yum remove -y ${NODEJS_SCL}\* || : ) && \
-    INSTALL_PKGS="rh-nodejs${NODEJS_VERSION}-nodejs rh-nodejs${NODEJS_VERSION}-npm rh-nodejs${NODEJS_VERSION}-nodejs-nodemon nss_wrapper" && \
-    ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS && \
-    yum -y clean all --enablerepo='*'
+RUN yum -y update \
+  && yum -y install centos-release-scl \
+  && yum -y install which devtoolset-7-make devtoolset-7-gcc devtoolset-7-gcc-c++ \
+  && curl -sL https://nodejs.org/dist/v8.9.1/node-v8.9.1.tar.gz | tar xz -C /tmp \
+  && cd /tmp/node-v8.9.1 \
+  && scl enable devtoolset-7 "./configure" \
+  && scl enable devtoolset-7 "make -j $(nproc)" \
+  && scl enable devtoolset-7 "make install" \
+  && cd / \
+  && node -v \
+  && npm -v \
+  && rm -rf /tmp/node* \
+  && yum clean all \
+  && rm -rf /var/cache/yum
+
+#RUN yum install -y centos-release-scl-rh && \
+#    ( [ "rh-${NAME}${NODEJS_VERSION}" != "${NODEJS_SCL}" ] && yum remove -y ${NODEJS_SCL}\* || : ) && \
+#    INSTALL_PKGS="rh-nodejs${NODEJS_VERSION}-nodejs rh-nodejs${NODEJS_VERSION}-npm rh-nodejs${NODEJS_VERSION}-nodejs-nodemon nss_wrapper" && \
+#    ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
+#    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
+#    rpm -V $INSTALL_PKGS && \
+#    yum -y clean all --enablerepo='*'
     
-
-#RUN yum install -y centos-release-scl-rh
-
-#RUN yum --enablerepo=centos-sclo-rh-testing install rh-nodejs10-nodejs
-
-#RUN yum --enablerepo=centos-sclo-rh-testing install rh-nodejs10-npm
-
-#RUN yum --enablerepo=centos-sclo-rh-testing install rh-nodejs10-nodejs-nodemon
-
-# TODO yum clean all 
 
 
 #IS THIS REQUIRED?
@@ -69,22 +74,25 @@ RUN yum install -y centos-release-scl-rh && \
 
 #USER 1001
 
+#test nodemon
+#CMD ["nodemon", "-h"]
+
+#test node install
+#CMD  ["node","-v"]
+
 # Create and change to the app directory.
-#WORKDIR /usr/src/app
+WORKDIR /usr/src/app
 
 # Copy application dependency manifests to the container image.
 # A wildcard is used to ensure both package.json AND package-lock.json are copied.
 # Copying this separately prevents re-running npm install on every code change.
-#COPY package*.json ./
-
-#test node install
-#RUN node -v
+COPY package*.json ./
 
 # Install production dependencies.
-#RUN npm install --only=production
+RUN npm install --only=production
 
 # Copy local code to the container image.
-#COPY . ./
+COPY . ./
 
 # Run the web service on container startup.
-#CMD [ "npm", "start" ]
+CMD [ "npm", "start" ]
