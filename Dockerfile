@@ -51,9 +51,6 @@ RUN yum install -y centos-release-scl-rh && \
     yum -y clean all --enablerepo='*'
 
 
-# Copy extra files to the image, including help file.
-COPY ./root/ /
-
 #IS THIS REQUIRED?
 # Drop the root user and make the content of /opt/app-root owned by user 1001
 #RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
