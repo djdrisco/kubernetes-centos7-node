@@ -42,14 +42,21 @@ LABEL summary="$SUMMARY" \
       help="For more information visit https://github.com/djdrisco/kubernetes-centos7-node" 
 
 
-RUN yum install -y centos-release-scl-rh && \
-    ( [ "rh-${NAME}${NODEJS_VERSION}" != "${NODEJS_SCL}" ] && yum remove -y ${NODEJS_SCL}\* || : ) && \
-    INSTALL_PKGS="rh-nodejs${NODEJS_VERSION} rh-nodejs${NODEJS_VERSION}-npm rh-nodejs${NODEJS_VERSION}-nodejs-nodemon nss_wrapper" && \
-    ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS && \
-    yum -y clean all --enablerepo='*'
+#RUN yum install -y centos-release-scl-rh && \
+#    ( [ "rh-${NAME}${NODEJS_VERSION}" != "${NODEJS_SCL}" ] && yum remove -y ${NODEJS_SCL}\* || : ) && \
+#    INSTALL_PKGS="rh-nodejs${NODEJS_VERSION} rh-nodejs${NODEJS_VERSION}-npm rh-nodejs${NODEJS_VERSION}-nodejs-nodemon nss_wrapper" && \
+#    ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
+#    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
+#    rpm -V $INSTALL_PKGS && \
+#    yum -y clean all --enablerepo='*'
+    
 
+RUN yum install -y centos-release-scl-rh && \
+    yum --enablerepo=centos-sclo-rh-testing install rh-nodejs10-nodejs && \
+    yum --enablerepo=centos-sclo-rh-testing install rh-nodejs10-npm && \
+    yum --enablerepo=centos-sclo-rh-testing install rh-nodejs10-nodejs-nodemon
+
+# TODO yum clean all 
 
 #IS THIS REQUIRED?
 # Drop the root user and make the content of /opt/app-root owned by user 1001
