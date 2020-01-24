@@ -53,10 +53,10 @@ RUN yum install -y centos-release-scl-rh && \
 
 #IS THIS REQUIRED?
 # Drop the root user and make the content of /opt/app-root owned by user 1001
-#RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
-#    rpm-file-permissions
+RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
+    rpm-file-permissions
 
-#USER 1001
+USER 1001
 
 # Create and change to the app directory.
 WORKDIR /usr/src/app
