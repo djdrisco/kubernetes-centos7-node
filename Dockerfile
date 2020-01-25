@@ -53,9 +53,9 @@ RUN yum -y update \
   && cd / \
   && node -v \
   && npm -v \
-  && rm -rf /tmp/node* \
-  && yum clean all \
-  && rm -rf /var/cache/yum
+#  && rm -rf /tmp/node* \
+#  && yum clean all \
+#  && rm -rf /var/cache/yum
 
 #RUN yum install -y centos-release-scl-rh && \
 #    ( [ "rh-${NAME}${NODEJS_VERSION}" != "${NODEJS_SCL}" ] && yum remove -y ${NODEJS_SCL}\* || : ) && \
